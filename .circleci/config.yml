@@ -1,0 +1,35 @@
+version: 2.1
+orbs:
+  node: circleci/node@4.7.0
+  sonarscanner: psl/sonarscanner@0.0.4
+jobs:
+  test:
+    docker:
+      # replace with your preferred image
+      - image: cimg/openjdk:11.0.12
+    working_directory: ~/fintrack-service
+    steps:
+      - checkout
+            
+      - sonarscanner/check-code-quality
+
+  build:
+    working_directory: ~/fintrack-service
+    docker:
+      - image: cimg/node:14.17
+
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Compile Typescript Source
+          command: npm run build
+
+workflows:
+  version: 2.1
+  build_and_test:
+    jobs:
+      - build
+      - test
